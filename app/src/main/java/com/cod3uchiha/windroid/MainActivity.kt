@@ -106,7 +106,7 @@ private fun WindroidHome(report: HostReport, onSetup: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text("Windroid", style = MaterialTheme.typography.headlineLarge)
-        Text("Rootless virtual ThinkPad • Windows 7 32-bit")
+        Text("Rootless PC desktop • Fast Windows app compatibility")
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Host device", style = MaterialTheme.typography.titleLarge)
@@ -127,12 +127,12 @@ private fun WindroidHome(report: HostReport, onSetup: () -> Unit) {
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Virtual ThinkPad profile", style = MaterialTheme.typography.titleLarge)
-                InfoRow("Guest OS", "Windows 7 32-bit (x86)")
-                InfoRow("Virtual CPU", "2 cores (initial profile)")
-                InfoRow("Guest RAM", "2 GB default; adjustable")
-                InfoRow("Virtual disk", "64 GB expandable")
-                InfoRow("Firmware", "Legacy BIOS (SeaBIOS planned)")
-                InfoRow("TPM", "Not required by Windows 7")
+                InfoRow("Fast desktop", "ARM64 Linux (native)")
+                InfoRow("Windows apps", "Wine / ARM64 Proton + FEX")
+                InfoRow("Graphics", "Adreno 730 + Vulkan / Turnip (planned)")
+                InfoRow("Runtime storage", "Expandable app data")
+                InfoRow("Fast mode", "No full PC emulation")
+                InfoRow("Full Windows 7 VM", "Optional slow x86 emulation")
                 InfoRow("Graphics", "Basic virtual display; 3D acceleration not guaranteed")
             }
         }
@@ -140,7 +140,7 @@ private fun WindroidHome(report: HostReport, onSetup: () -> Unit) {
             Text("Windows VM engine not integrated yet")
         }
         Text(
-            "This screen performs host detection only. It does not claim to have started Windows. The QEMU x86 engine, SeaBIOS, virtual disk creation, Windows 7 installer workflow and input/display bridge still need to be integrated and tested on the S22 Ultra.",
+            "This screen performs host detection only. It does not claim to have started Windows. The ARM64 Linux runtime, graphics stack, Wine/Proton/FEX integration, desktop compositor and input bridge still need to be integrated and tested. Full Windows 7 remains a separate, slower QEMU x86 mode.",
             style = MaterialTheme.typography.bodySmall
         )
     }
