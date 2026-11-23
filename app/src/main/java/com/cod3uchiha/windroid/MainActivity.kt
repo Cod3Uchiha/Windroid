@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import java.io.File
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,9 +86,9 @@ private object HostProbe {
             totalRamGb = ramGb,
             freeStorageGb = freeGb,
             virtualization = nodeSummary,
-            backend = if (arm64) "QEMU ARM64 TCG (software emulation)" else "Unsupported host ABI",
+            backend = if (arm64) "QEMU x86 TCG (software emulation on ARM64 host)" else "Unsupported host ABI",
             explanation = if (arm64) {
-                "Rootless mode cannot assume KVM access. Windroid must use software CPU emulation unless a future supported Android virtualization API is available. Expect slow Windows installation and desktop response."
+                "Windows 7 x86 runs as a different CPU architecture from this ARM64 phone. Rootless mode therefore uses QEMU TCG software translation; expect slow installation and desktop performance."
             } else {
                 "This build requires a 64-bit ARM Android host."
             }
@@ -107,7 +106,7 @@ private fun WindroidHome(report: HostReport, onSetup: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         Text("Windroid", style = MaterialTheme.typography.headlineLarge)
-        Text("Rootless virtual ThinkPad • Windows 11 ARM64")
+        Text("Rootless virtual ThinkPad • Windows 7 32-bit")
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Host device", style = MaterialTheme.typography.titleLarge)
@@ -128,12 +127,12 @@ private fun WindroidHome(report: HostReport, onSetup: () -> Unit) {
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text("Virtual ThinkPad profile", style = MaterialTheme.typography.titleLarge)
-                InfoRow("Guest OS", "Windows 11 ARM64")
-                InfoRow("Virtual CPU", "4 cores (initial profile)")
-                InfoRow("Guest RAM", "4 GB default; adjustable")
+                InfoRow("Guest OS", "Windows 7 32-bit (x86)")
+                InfoRow("Virtual CPU", "2 cores (initial profile)")
+                InfoRow("Guest RAM", "2 GB default; adjustable")
                 InfoRow("Virtual disk", "64 GB expandable")
-                InfoRow("Firmware", "UEFI")
-                InfoRow("TPM", "Virtual TPM 2.0 — integration pending")
+                InfoRow("Firmware", "Legacy BIOS (SeaBIOS planned)")
+                InfoRow("TPM", "Not required by Windows 7")
                 InfoRow("Graphics", "Basic virtual display; 3D acceleration not guaranteed")
             }
         }
@@ -141,7 +140,7 @@ private fun WindroidHome(report: HostReport, onSetup: () -> Unit) {
             Text("Windows VM engine not integrated yet")
         }
         Text(
-            "This screen performs host detection only. It does not claim to have started Windows. The QEMU engine, UEFI firmware, virtual disk creation, installer workflow and input/display bridge still need to be integrated and tested on the S22 Ultra.",
+            "This screen performs host detection only. It does not claim to have started Windows. The QEMU x86 engine, SeaBIOS, virtual disk creation, Windows 7 installer workflow and input/display bridge still need to be integrated and tested on the S22 Ultra.",
             style = MaterialTheme.typography.bodySmall
         )
     }
