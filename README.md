@@ -1,31 +1,39 @@
 # Windroid
 
-Windroid is an Android app project intended to run a genuine Windows 7 guest in a custom virtual ThinkPad profile on a Galaxy S22 Ultra.
+Windroid targets a fast, rootless PC desktop experience on the Galaxy S22 Ultra. The performance-first design is inspired by the architecture used by DroidDeck, but Windroid is its own project.
 
-## Current status: 0.2.1 scaffold
+## Two execution modes
 
-The current app contains a Compose host-information screen and a conservative virtualization capability probe. It reports the Android version, host ABI, RAM, free storage, and whether common virtualization device nodes are visible.
+### Fast mode (recommended)
 
-**This is not yet a working Windows VM.** The QEMU x86 engine, PC firmware, virtual disk, Windows installer flow, storage/network devices, and display/input bridge have not been integrated. The app does not claim that Windows is booting.
+- Run an ARM64 Linux userspace natively on Android.
+- Provide a lightweight Linux desktop with a Vulkan-capable compositor.
+- Use the Adreno 730 through a compatible Vulkan/Turnip driver stack where available.
+- Run Windows applications through Wine or ARM64 Proton, with FEX for x86/x64 instruction translation where required.
+- Avoid emulating an entire x86 PC for ordinary Windows applications.
 
-## Guest architecture and rootless execution
+This is a Windows application compatibility environment, **not a full Windows 7 operating system**. Some Windows programs will not work, and performance depends on their architecture, graphics API and driver compatibility.
 
-Windows 7 was not released as an ARM64 edition. The selected guest is Windows 7 32-bit (x86), translated by QEMU TCG on the phone's ARM64 CPU. This is software emulation, not hardware virtualization, and performance may be very slow.
+DroidDeck documents support for Android devices with Adreno 730 or newer and describes an ARM64 Linux + gamescope + Proton/FEX architecture. See https://github.com/Droid-Deck/DroidDeck and its GPL-3.0 licence. Any reuse or derivative distribution must comply with the applicable licence and preserve required notices. Windroid must not imply affiliation with DroidDeck or Valve.
 
-The target is an unrooted Android installation. Windroid must not assume that /dev/kvm, /dev/gunyah, or /dev/gzvm is usable just because a device node exists. Android app sandbox permissions and the host kernel determine whether hardware virtualization can actually be opened. An x86 guest cannot use ARM64 KVM as a direct same-architecture acceleration path in any case.
+### Full Windows 7 mode (optional)
 
-## Planned virtual ThinkPad
+- Guest: Windows 7 32-bit (x86), using installation media the user is licensed to use.
+- Emulator: QEMU TCG software CPU emulation on the ARM64 phone.
+- Emulated machine: PC chipset, legacy BIOS (SeaBIOS), IDE/SATA disk, basic VGA and emulated network adapter.
+- Initial profile: 2 virtual CPUs, 2 GB guest RAM, expandable 64 GB virtual disk.
 
-- Guest: Windows 7 32-bit (x86)
-- Machine: emulated PC chipset with legacy BIOS (SeaBIOS)
-- Initial resources: 2 virtual CPUs, 2 GB guest RAM, expandable 64 GB virtual disk
-- Storage: IDE or SATA/AHCI initially, to use Windows 7 inbox drivers where possible
-- Network: emulated Intel E1000 adapter, subject to driver support
-- Display/input: basic VGA framebuffer, USB tablet, keyboard and mouse
-- TPM 2.0 and Secure Boot: not required for Windows 7
-- Graphics: basic display first; 3D acceleration is not promised
+This boots a genuine Windows 7 installation, but cross-architecture software emulation will be substantially slower than Fast mode. It is not expected to match DroidDeck performance.
 
-Use installation media that you are licensed to use. The app should verify downloaded images and never silently source modified Windows installers.
+## Current implementation status
+
+The Android app currently contains a Compose host-information screen and a conservative host capability probe. It reports Android version, CPU ABI, RAM, free storage, and whether common virtualization device nodes are visible.
+
+**Neither execution mode is integrated yet.** The ARM64 Linux runtime, compositor, Vulkan/Turnip stack, Wine/Proton/FEX components, QEMU x86 engine, firmware, virtual disk, Windows installer, and input/display bridges remain implementation work. The current app is a scaffold, not a working desktop or VM, and no APK has been verified as built.
+
+## Rootless constraints
+
+Windroid targets unrooted Android. It must not assume /dev/kvm, /dev/gunyah, or /dev/gzvm is usable merely because a device node exists. Android app sandbox permissions and kernel support determine access. Fast mode avoids full-PC CPU emulation, but still requires careful Android process, filesystem, graphics and audio integration.
 
 ## Build
 
@@ -33,4 +41,4 @@ The GitHub Actions workflow builds a debug APK with JDK 17 and Gradle 8.9. Open 
 
 ## Device testing required
 
-The app must be installed and tested on the actual S22 Ultra. Emulator success alone does not validate QEMU execution, Android sandbox behavior, Windows boot, thermal behavior, memory pressure, or sustained performance on the phone.
+Test on the actual S22 Ultra. Verify process spawning, Android child-process limits, Vulkan extensions, thermal throttling, memory pressure, audio, controller/touch input and sustained performance. Never infer support solely from the GPU model.
